@@ -108,40 +108,58 @@
 </script>
 
 <div class="wallet">
+    
+    <button on:click={connectKeplr} class:connected="{connected == true}">
+        {connected == false ? 'Connect' : compactAddress(keplr.bech32Address)}
+    </button>
     {#if keplr }
         <div class="balance">
-            {keplr.name}
+            [ {keplr.name} ]
         </div>
     {/if}
 
-    <button on:click={connectKeplr}>
-        {connected == false ? 'Connect' : compactAddress(keplr.bech32Address)}
-    </button>
 </div>
 
 <style>
     .wallet {
+        position: relative;
         display: flex;
-        flex-flow: row nowrap;
-        justify-content: right;
-        margin-top: 25px;
-        margin-right: 50px;
-        gap: 25px;
+        align-items: center;
+        justify-content: flex-start;
+        flex-flow: row-reverse nowrap;
+        margin: 5px 25px 5px auto;
+        gap: 15px;
+        transition: all ease 1s;
     }
     .wallet .balance {
-        color: var(--color-theme-1);
+        color: var(--color-theme-2);
         font-weight: 700;
+        transition: all ease 1s;
     }
     button {
         cursor: pointer;
+        min-width: 140px;
         width: fit-content;
+        height: min-content;
         padding: 10px;
         border-radius: 10px;
-        border-color: var(--color-theme-1);
+        border: 2px solid var(--color-theme-1);
+        box-shadow: inset 0px 0px 3px var(--color-theme-1), 0px 0px 3px var(--color-theme-1);
         background-color: var(--color-bg-3);
+        background-color: rgba(0,0,0,0.2);
         color: var(--color-text-strong);
+        color: var(--color-theme-1);
         font-size: small;
         font-weight: 700;
         letter-spacing: 1px;
+        transition: all ease 1s;
+    }
+    button:hover {
+        filter: brightness(120%)
+    }
+    .connected {
+        border: 2px solid var(--color-theme-2);
+        box-shadow: inset 0px 0px 3px var(--color-theme-2), 0px 0px 3px var(--color-theme-2);
+        color: rgba(254,255,255,0.9);
     }
 </style>

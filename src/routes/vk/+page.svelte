@@ -81,7 +81,7 @@
 </script>
 
 
-<div class="container" in:scale>
+<div class="container" in:blur>
   
   {#each tokens as token}
   <div class="card">
@@ -117,6 +117,14 @@
     justify-content: space-evenly;
     filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5));
   }
+  .card:hover img {
+    rotate: -360deg;
+    filter: drop-shadow(0px 0px 5px var(--color-theme-2));
+  }
+  .card:hover {
+    filter:brightness(120%);
+  }
+
   p {
     align-items: center;
     justify-content: flex-start;
@@ -129,8 +137,10 @@
   img {
     width: 40px;
     height: 40px;
-    border-radius: 100%;
+    /* border-radius: 100%; */
+    transition: all ease 500ms;
   }
+
   button {
     border-radius: 10px;
     background-color: var(--color-bg-3);

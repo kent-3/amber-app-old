@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import logo from '$lib/images/amber-logo-1.svg';
 	import github from '$lib/images/github.svg';
+	import telegram from '$lib/images/telegram.svg';
+	import twitter from '$lib/images/twitter.svg';
 	import Wallet from './Wallet.svelte';
 </script>
 
@@ -29,8 +31,8 @@
 			<li aria-current={$page.url.pathname.startsWith('/vk') ? 'page' : undefined}>
 				<a href="/vk">Keys</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/NFT') ? 'page' : undefined}>
-				<a href="/NFT">NFTs</a>
+			<li aria-current={$page.url.pathname.startsWith('/nft') ? 'page' : undefined}>
+				<a href="/nft">NFTs</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
@@ -39,10 +41,15 @@
 	</nav>
 
 	<div class="corner">
-		<!-- <a href="https://github.com/sveltejs/kit">
-			<img src={github} alt="GitHub" />
+		<!-- <a href="https://twitter.com/AmberDAO_" target="_blank" rel="noopener noreferrer">
+			<img src={twitter} alt="Twitter" />
+		</a>
+		<a href="https://t.me/AmberDAOscrt" target="_blank" rel="noopener noreferrer">
+			<img src={telegram} alt="Telegram" />
 		</a> -->
-		<Wallet />
+		<a href="https://github.com/kent-3/amber-app" target="_blank" rel="noopener noreferrer">
+			<img src={github} alt="GitHub" />
+		</a>
 	</div>
 </header>
 
@@ -55,6 +62,8 @@
 	.corner {
 		width: 3em;
 		height: 3em;
+		justify-content: flex-end;
+		display: flex;
 	}
 
 	.corner a {
@@ -69,6 +78,12 @@
 		width: 2em;
 		height: 2em;
 		object-fit: contain;
+		transition: all ease 300ms;
+		margin: 0 1em;
+	}
+
+	.corner img:hover {
+		scale: 125%;
 	}
 
 	nav {

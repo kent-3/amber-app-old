@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { scale } from 'svelte/transition';
+	import { blur, scale } from 'svelte/transition';
     import { scrtBalance, amberBalance } from '../../utils/stores';
 
     let scrtBalanceValue: string
@@ -14,14 +14,14 @@
 
 </script>
 
-<div class="container" in:scale>
+<div class="container" in:blur>
     <div class="card">
-        <img src="/scrt.svg" alt="SCRT"/>
+        <img src="/scrt.svg" alt="SCRT" style="filter: drop-shadow(0px 0px 6px var(--color-theme-2));"/>
         {scrtBalanceValue} <strong>&emsp;SCRT</strong>
     </div>
 
     <div class="card" style="color: var(--color-theme-1);">
-        <img src="/amber.svg" alt="amber"/>
+        <img src="/amber.svg" alt="amber" style="filter: drop-shadow(0px 0px 3px #f2b046);"/>
         {amberBalanceValue} <strong>&emsp;AMBER</strong>
     </div>
 </div>

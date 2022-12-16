@@ -9,7 +9,7 @@
 	<meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="text-column" in:scale>
+<div class="text-column" in:blur>
 	<h1>About this app</h1>
 
 	<p>
