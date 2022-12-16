@@ -1,7 +1,4 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
 	import illustration from '$lib/images/illustration.svg'
 	import { blur, fade, scale, draw, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -58,7 +55,7 @@
 	}
 
 	svg {
-		filter: drop-shadow(0 0 3px #798498);
+		filter: drop-shadow(0 0 2px #798498);
 		transition: all ease 1s;
 	}
 
@@ -67,7 +64,7 @@
 	}
 
 	svg:hover {
-		filter: drop-shadow(0 0 8px #798498);
+		filter: drop-shadow(0 0 6px #798498);
 		/* stroke: #f2b046; */
 	}
 

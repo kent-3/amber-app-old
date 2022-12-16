@@ -122,7 +122,7 @@
     filter: drop-shadow(0px 0px 5px var(--color-theme-2));
   }
   .card:hover {
-    filter:brightness(120%);
+    filter:brightness(110%);
   }
 
   p {
