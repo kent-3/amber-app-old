@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { scale } from "svelte/transition";
-
+	import { scale } from 'svelte/transition'
 </script>
 
-<div in:scale>
-     
-</div>
+<div in:scale />

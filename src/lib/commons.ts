@@ -1,25 +1,22 @@
-import type { StdFee } from "@cosmjs/stargate";
+import type { StdFee } from '@cosmjs/stargate'
 // import { Bech32Address } from "@keplr-wallet/cosmos";
-import type { Keplr } from "@keplr-wallet/types";
-import { sha256 } from "@noble/hashes/sha256";
-import { toHex, toUtf8 } from "secretjs";
+import type { Keplr } from '@keplr-wallet/types'
+import { sha256 } from '@noble/hashes/sha256'
+import { toHex, toUtf8 } from 'secretjs'
 
-export const viewingKeyErrorString = "🧐";
+export const viewingKeyErrorString = '🧐'
 
-export const faucetURL = "https://faucet.secretsaturn.net/claim";
-export const faucetAddress = "secret1tq6y8waegggp4fv2fcxk3zmpsmlfadyc7lsd69";
+export const faucetURL = 'https://faucet.secretsaturn.net/claim'
+export const faucetAddress = 'secret1tq6y8waegggp4fv2fcxk3zmpsmlfadyc7lsd69'
 
-export const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export const gasPriceUscrt = 0.25;
+export const gasPriceUscrt = 0.25
 export function gasToFee(gas: number): StdFee {
-  return {
-    amount: [
-      { amount: String(Math.floor(gas * gasPriceUscrt) + 1), denom: "uscrt" },
-    ],
-    gas: String(gas),
-  };
+	return {
+		amount: [{ amount: String(Math.floor(gas * gasPriceUscrt) + 1), denom: 'uscrt' }],
+		gas: String(gas)
+	}
 }
 
 // export async function suggestTerraToKeplr(keplr: Keplr) {
@@ -187,19 +184,19 @@ export function gasToFee(gas: number): StdFee {
 // }
 
 export const ibcDenom = (
-  paths: {
-    incomingPortId: string;
-    incomingChannelId: string;
-  }[],
-  coinMinimalDenom: string
+	paths: {
+		incomingPortId: string
+		incomingChannelId: string
+	}[],
+	coinMinimalDenom: string
 ): string => {
-  const prefixes = [];
-  for (const path of paths) {
-    prefixes.push(`${path.incomingPortId}/${path.incomingChannelId}`);
-  }
+	const prefixes = []
+	for (const path of paths) {
+		prefixes.push(`${path.incomingPortId}/${path.incomingChannelId}`)
+	}
 
-  const prefix = prefixes.join("/");
-  const denom = `${prefix}/${coinMinimalDenom}`;
+	const prefix = prefixes.join('/')
+	const denom = `${prefix}/${coinMinimalDenom}`
 
-  return "ibc/" + toHex(sha256(toUtf8(denom))).toUpperCase();
-};
+	return 'ibc/' + toHex(sha256(toUtf8(denom))).toUpperCase()
+}

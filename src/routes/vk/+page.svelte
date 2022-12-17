@@ -1,154 +1,157 @@
 <script lang="ts">
-    import { base } from '$app/paths'
-    import { getKeplrViewingKey, setKeplrViewingKey } from "$lib/keplr"
-    import type { BasicToken, ComplexToken, SecretAddress, Token } from "$lib/tokens"
-    import { tokenList as localTokens } from "$lib/tokens"
-    import { tokenStore } from "$lib/stores"
-	  import { blur, scale } from "svelte/transition";
+	import { base } from '$app/paths'
+	import { getKeplrViewingKey, setKeplrViewingKey } from '$lib/keplr'
+	import type { BasicToken, ComplexToken, SecretAddress, Token } from '$lib/tokens'
+	import { tokenList as localTokens } from '$lib/tokens'
+	import { tokenStore } from '$lib/stores'
+	import { blur } from 'svelte/transition'
 
-    let tokens: Array<BasicToken>
+	let tokens: Array<BasicToken>
 
-    tokenStore.subscribe(value => {
-        if (value) {
-          tokens = [...value].map(([address, token]) => ( token )) as BasicToken[]
-        }
-        else tokens
-    })
+	tokenStore.subscribe((value) => {
+		if (value) {
+			tokens = [...value].map(([address, token]) => token) as BasicToken[]
+		} else tokens
+	})
 
-    const loadTokens = async () => {
-      //   setLoading(true);
-      
-      const tokens = new Map<SecretAddress, Token>();
-      const relatedTokens = new Map<SecretAddress, Set<SecretAddress>>();
+	const loadTokens = async () => {
+		//   setLoading(true);
 
-      for (const token of localTokens) {
-        if (token.address in tokens) {
-          console.error(`Duplicate tokens ${token} and ${tokens.get(token.address)}`);
-        }
+		const tokens = new Map<SecretAddress, Token>()
+		const relatedTokens = new Map<SecretAddress, Set<SecretAddress>>()
 
-        if (token.type == "LP") {
-          const [asset1, asset2] = token.assets;
+		for (const token of localTokens) {
+			if (token.address in tokens) {
+				console.error(`Duplicate tokens ${token} and ${tokens.get(token.address)}`)
+			}
 
-          if (!tokens.has(asset1) || !tokens.has(asset2)) {
-            console.log(`Skipping LP token ${token.address} because ${asset1} or ${asset2} is unknown.`);
-            continue;
-          }
+			if (token.type == 'LP') {
+				const [asset1, asset2] = token.assets
 
-          relatedTokens.set(asset1, new Set([...new Set(relatedTokens.get(asset1)), token.address]));
-          relatedTokens.set(asset2, new Set([...new Set(relatedTokens.get(asset2)), token.address]));
+				if (!tokens.has(asset1) || !tokens.has(asset2)) {
+					console.log(
+						`Skipping LP token ${token.address} because ${asset1} or ${asset2} is unknown.`
+					)
+					continue
+				}
 
-          tokens.set(token.address, token);
+				relatedTokens.set(asset1, new Set([...new Set(relatedTokens.get(asset1)), token.address]))
+				relatedTokens.set(asset2, new Set([...new Set(relatedTokens.get(asset2)), token.address]))
 
-          continue;
-        } else if (token.type == "REWARDS") {
-          const [lockToken, rewardsToken] = token.assets;
+				tokens.set(token.address, token)
 
-          if (!tokens.has(lockToken) || !tokens.has(rewardsToken)) {
-            console.log(`Skipping Rewards token ${token.address} because ${lockToken} or ${rewardsToken} is unknown.`);
-            continue;
-          }
+				continue
+			} else if (token.type == 'REWARDS') {
+				const [lockToken, rewardsToken] = token.assets
 
-          relatedTokens.set(rewardsToken, new Set([...new Set(relatedTokens.get(rewardsToken)), token.address]));
+				if (!tokens.has(lockToken) || !tokens.has(rewardsToken)) {
+					console.log(
+						`Skipping Rewards token ${token.address} because ${lockToken} or ${rewardsToken} is unknown.`
+					)
+					continue
+				}
 
-          if (tokens.get(lockToken)?.type === "LP") {
-            const [asset1, asset2] = (tokens.get(lockToken) as ComplexToken).assets;
-            token.assets = [asset1, asset2, rewardsToken];
+				relatedTokens.set(
+					rewardsToken,
+					new Set([...new Set(relatedTokens.get(rewardsToken)), token.address])
+				)
 
-            relatedTokens.set(asset1, new Set([...new Set(relatedTokens.get(asset1)), token.address]));
-            relatedTokens.set(asset2, new Set([...new Set(relatedTokens.get(asset2)), token.address]));
-          } else {
-            relatedTokens.set(lockToken, new Set([...new Set(relatedTokens.get(lockToken)), token.address]));
-          }
+				if (tokens.get(lockToken)?.type === 'LP') {
+					const [asset1, asset2] = (tokens.get(lockToken) as ComplexToken).assets
+					token.assets = [asset1, asset2, rewardsToken]
 
-          tokens.set(token.address, token);
+					relatedTokens.set(asset1, new Set([...new Set(relatedTokens.get(asset1)), token.address]))
+					relatedTokens.set(asset2, new Set([...new Set(relatedTokens.get(asset2)), token.address]))
+				} else {
+					relatedTokens.set(
+						lockToken,
+						new Set([...new Set(relatedTokens.get(lockToken)), token.address])
+					)
+				}
 
-          continue;
-        }
+				tokens.set(token.address, token)
 
-        tokens.set(token.address, token);
-      }
+				continue
+			}
 
-    tokenStore.set(tokens);
-    //   setRelatedTokens(relatedTokens);
-    //   setLoading(false);
-    }
+			tokens.set(token.address, token)
+		}
 
-    loadTokens()
+		tokenStore.set(tokens)
+		//   setRelatedTokens(relatedTokens);
+		//   setLoading(false);
+	}
 
+	loadTokens()
 </script>
 
-
 <div class="container" in:blur>
-  
-  {#each tokens as token}
-  <div class="card">
-
-    {#await getKeplrViewingKey(token.address) then vk }
-
-    {#if vk == null}
-      <p> <img src='{base}{token.logo}' alt="logo"/>
-        {token.symbol} <button on:click={() => setKeplrViewingKey(token.address)}> set key </button>
-      </p>
-    {:else}
-      <p> <img src='{base}{token.logo}' alt="logo"/>
-        {token.symbol} <button disabled style="cursor: default;"> key set </button>
-      </p>
-    {/if}
-
-    {/await}
-    
-  </div>  
-  {/each}
-  
+	{#each tokens as token}
+		<div class="card">
+			{#await getKeplrViewingKey(token.address) then vk}
+				{#if vk == null}
+					<p>
+						<img src="{base}{token.logo}" alt="logo" />
+						{token.symbol}
+						<button on:click={() => setKeplrViewingKey(token.address)}> set key </button>
+					</p>
+				{:else}
+					<p>
+						<img src="{base}{token.logo}" alt="logo" />
+						{token.symbol} <button disabled style="cursor: default;"> key set </button>
+					</p>
+				{/if}
+			{/await}
+		</div>
+	{/each}
 </div>
 
-
 <style>
-  .container {
-    margin-top: 25px;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    row-gap: 10px;
-  }
-  .card {
-    display: flex;
-    flex-flow: row wrap;
-    width: 300px;
-    justify-content: space-evenly;
-    filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5));
-  }
-  .card:hover img {
-    rotate: -360deg;
-    filter: drop-shadow(0px 0px 5px var(--color-theme-2));
-  }
-  .card:hover {
-    filter:brightness(110%);
-  }
+	.container {
+		margin-top: 25px;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		row-gap: 10px;
+	}
+	.card {
+		display: flex;
+		flex-flow: row wrap;
+		width: 300px;
+		justify-content: space-evenly;
+		filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+	}
+	.card:hover img {
+		rotate: -360deg;
+		filter: drop-shadow(0px 0px 5px var(--color-theme-2));
+	}
+	.card:hover {
+		filter: brightness(110%);
+	}
 
-  p {
-    align-items: center;
-    justify-content: flex-start;
-    display: flex;
-    flex-flow: row nowrap;
-    gap: 20px 20px;
-    font-weight: 700;
-    margin: 5px 0px;
-  }
-  img {
-    width: 40px;
-    height: 40px;
-    /* border-radius: 100%; */
-    transition: all ease 500ms;
-  }
+	p {
+		align-items: center;
+		justify-content: flex-start;
+		display: flex;
+		flex-flow: row nowrap;
+		gap: 20px 20px;
+		font-weight: 700;
+		margin: 5px 0px;
+	}
+	img {
+		width: 40px;
+		height: 40px;
+		/* border-radius: 100%; */
+		transition: all ease 500ms;
+	}
 
-  button {
-    border-radius: 10px;
-    background-color: var(--color-bg-3);
-    color: var(--color-text-strong);
-    padding: 2px 10px;
-    cursor: pointer;
-  }
+	button {
+		border-radius: 10px;
+		background-color: var(--color-bg-3);
+		color: var(--color-text-strong);
+		padding: 2px 10px;
+		cursor: pointer;
+	}
 </style>

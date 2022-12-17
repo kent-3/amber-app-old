@@ -1,7 +1,5 @@
 <script>
-
-	import { blur, fade, scale } from "svelte/transition";
-
+	import { blur, fade, scale } from 'svelte/transition'
 </script>
 
 <svelte:head>
@@ -26,7 +24,7 @@
 	</p>
 
 	<p>
-		The Sverdle page illustrates SvelteKit's data loading and form handling. Try
-		using it with JavaScript disabled!
+		The Sverdle page illustrates SvelteKit's data loading and form handling. Try using it with
+		JavaScript disabled!
 	</p>
 </div>
