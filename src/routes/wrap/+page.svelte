@@ -1,6 +1,6 @@
 <script>
 
-	import { blur, fade, scale, slide } from "svelte/transition";
+	import { blur, fade, scale } from "svelte/transition";
 
 </script>
 

@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { getKeplrViewingKey, setKeplrViewingKeys, chainId } from "../../utils/keplr"
-    import type { BasicToken, ComplexToken, SecretAddress, Token } from "../../tokens/tokens"
-    import { tokenList as localTokens } from "../../tokens/tokens"
-    import { tokenStore } from "../../utils/stores"
-	  import { blur, fly, scale } from "svelte/transition";
+    import { base } from '$app/paths'
+    import { getKeplrViewingKey, setKeplrViewingKey } from "$lib/keplr"
+    import type { BasicToken, ComplexToken, SecretAddress, Token } from "$lib/tokens"
+    import { tokenList as localTokens } from "$lib/tokens"
+    import { tokenStore } from "$lib/stores"
+	  import { blur, scale } from "svelte/transition";
 
     let tokens: Array<BasicToken>
 
@@ -14,13 +15,9 @@
         else tokens
     })
 
-    async function suggestToken(token: string) { 
-      await window.keplr!.suggestToken(chainId, token)
-    }
-
     const loadTokens = async () => {
-    //   setLoading(true);
-
+      //   setLoading(true);
+      
       const tokens = new Map<SecretAddress, Token>();
       const relatedTokens = new Map<SecretAddress, Set<SecretAddress>>();
 
@@ -91,8 +88,8 @@
       {token.symbol} <button style="cursor:default;" disabled> key found </button>
     </p>
     {:else}
-    <p> <img src={token.logo} alt="logo"/>
-      {token.symbol} <button on:click={() => suggestToken(token.address)}> set key </button>
+    <p> <img src='{base}{token.logo}' alt="logo"/>
+      {token.symbol} <button on:click={() => setKeplrViewingKey(token.address)}> set key </button>
     </p>
     {/if}
   </div>  

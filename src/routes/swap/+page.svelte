@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { base } from '$app/paths'
 	import { blur, scale } from 'svelte/transition';
-    import { scrtBalance, amberBalance } from '../../utils/stores';
+    import { scrtBalance, amberBalance } from '$lib/stores';
 
     let scrtBalanceValue: string
     let amberBalanceValue: string
@@ -16,12 +17,12 @@
 
 <div class="container" in:blur>
     <div class="card">
-        <img src="/scrt.svg" alt="SCRT" style="filter: drop-shadow(0px 0px 6px var(--color-theme-2));"/>
+        <img src="{base}/scrt.svg" alt="SCRT" style="filter: drop-shadow(0px 0px 6px var(--color-theme-2));"/>
         {scrtBalanceValue} <strong>&emsp;SCRT</strong>
     </div>
 
     <div class="card" style="color: var(--color-theme-1);">
-        <img src="/amber.svg" alt="amber" style="filter: drop-shadow(0px 0px 3px #f2b046);"/>
+        <img src="{base}/amber.svg" alt="amber" style="filter: drop-shadow(0px 0px 3px #f2b046);"/>
         {amberBalanceValue} <strong>&emsp;AMBER</strong>
     </div>
 </div>

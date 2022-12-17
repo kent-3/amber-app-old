@@ -1,10 +1,11 @@
 <script>
-	import { page } from '$app/stores';
-	import logo from '$lib/images/amber-logo-1.svg';
-	import github from '$lib/images/github.svg';
-	import telegram from '$lib/images/telegram.svg';
-	import twitter from '$lib/images/twitter.svg';
-	import Wallet from './Wallet.svelte';
+	import { page } from '$app/stores'
+	import { base } from '$app/paths'
+	import logo from '$lib/images/amber-logo-1.svg'
+	import github from '$lib/images/github.svg'
+	import telegram from '$lib/images/telegram.svg'
+	import twitter from '$lib/images/twitter.svg'
+	import Wallet from './Wallet.svelte'
 </script>
 
 <header>
@@ -20,19 +21,19 @@
 		</svg>
 		<ul>
 			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
-				<a href="/">Home</a>
+				<a href="{base}/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
+			<li aria-current={$page.url.pathname === '/wrap' ? 'page' : undefined}>
+				<a href="{base}/wrap">Wrap</a>
 			</li>
 			<li aria-current={$page.url.pathname.startsWith('/swap') ? 'page' : undefined}>
-				<a href="/swap">Swap</a>
+				<a href="{base}/swap">Swap</a>
 			</li>
 			<li aria-current={$page.url.pathname.startsWith('/vk') ? 'page' : undefined}>
-				<a href="/vk">Keys</a>
+				<a href="{base}/vk">Keys</a>
 			</li>
 			<li aria-current={$page.url.pathname.startsWith('/nft') ? 'page' : undefined}>
-				<a href="/nft">NFTs</a>
+				<a href="{base}/nft">NFTs</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">

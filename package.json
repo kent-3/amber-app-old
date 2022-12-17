@@ -11,9 +11,11 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@cosmjs/stargate": "^0.29.5",
 		"@fontsource/fira-mono": "^4.5.10",
 		"@fontsource/hind": "^4.5.10",
 		"@fontsource/montserrat": "^4.5.13",
+		"@keplr-wallet/cosmos": "^0.11.25",
 		"@keplr-wallet/types": "^0.11.23",
 		"@neoconfetti/svelte": "^1.0.0",
 		"@sveltejs/adapter-auto": "next",

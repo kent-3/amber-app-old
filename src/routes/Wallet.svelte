@@ -1,19 +1,32 @@
 <script lang="ts">
 
     import { onMount } from "svelte"
-    import { SecretNetworkClient } from "secretjs";
-    import { amberBalance, scrtBalance, secretClient, keplrKey, viewingKeyStore } from "../utils/stores";
-	import type { Key } from "@keplr-wallet/types";
-	import type { SecretAddress } from "../tokens/tokens";
+    import type { SecretNetworkClient } from "secretjs"
+    import { setupKeplr } from "$lib/keplr"
+    import { compactAddress } from "$lib/utils"
+    import { chains } from "$lib/config"
+    import { amberBalance, scrtBalance, isAccountAvailable, keplrKey, secretClient, secretAddress, viewingKeyStore } from "$lib/stores"
+	import type { Key } from "@keplr-wallet/types"
+	import type { SecretAddress } from "$lib/tokens"
+
+    const SECRET_CHAIN_ID = chains["Secret Network"].chain_id;
+    const SECRET_LCD = chains["Secret Network"].lcd;
 
     onMount( ()=> {
         window.addEventListener("keplr_keystorechange", () => {
         console.log("Key store in Keplr is changed. You may need to refetch the account info.")
-        connectKeplr()
+        setupKeplr(isAccountAvailable, keplrKey, secretClient, secretAddress)
         })
     })
 
-    let connected: boolean = false
+    function connect() {
+        setupKeplr(isAccountAvailable, keplrKey, secretClient, secretAddress)
+    }
+
+    let connected: boolean
+    isAccountAvailable.subscribe(value => {
+        connected= value
+    })
 
     let keplr: Key
     keplrKey.subscribe(value => {
@@ -34,45 +47,32 @@
     scrtBalance.subscribe(value => {
 		scrtBalanceValue = value;
 	})
-    
-    const CHAIN_ID = "secret-4"
-    const url = "https://lcd.spartanapi.dev"
 
-    async function connectKeplr() {
-        if (!window.keplr) {
-            alert("Please install keplr extension");
-        } else {
-            await window.keplr!.enable(CHAIN_ID)
-                .catch((error) => console.log(error))
+    // async function connectKeplr() {
+    //     if (!window.keplr) {
+    //         alert("Please install keplr extension")
+    //     } else {
+    //         await window.keplr!.enable(CHAIN_ID)
+    //             .catch((error) => console.log(error))
 
-            const key = await window.keplr!.getKey(CHAIN_ID)
+    //         const key = await window.keplr!.getKey(CHAIN_ID)
 
-            const keplrOfflineSigner = window.keplr!.getOfflineSignerOnlyAmino(CHAIN_ID)
-            const [{ address: walletAddress }] = await keplrOfflineSigner.getAccounts()
-            const client = new SecretNetworkClient({
-                url,
-                chainId: CHAIN_ID,
-                wallet: keplrOfflineSigner,
-                walletAddress: walletAddress,
-                encryptionUtils: window.keplr!.getEnigmaUtils(CHAIN_ID),
-            })
+    //         const keplrOfflineSigner = window.keplr!.getOfflineSignerOnlyAmino(CHAIN_ID)
+    //         const [{ address: walletAddress }] = await keplrOfflineSigner.getAccounts()
+    //         const client = new SecretNetworkClient({
+    //             url,
+    //             chainId: CHAIN_ID,
+    //             wallet: keplrOfflineSigner,
+    //             walletAddress: walletAddress,
+    //             encryptionUtils: window.keplr!.getEnigmaUtils(CHAIN_ID),
+    //         })
             
-            keplrKey.set(key)
-            secretClient.set(client)
-            getBalances()
-            connected = true
-        }
-    }
-
-    function compactAddress(longAddress: string): string {
-        const shortAddress = longAddress.substring(0,6) + '...' + longAddress.substring(39)
-        return shortAddress
-    }
-
-    async function getViewingKey(tokenAddress: SecretAddress) {
-        const vk = await window.keplr?.getSecret20ViewingKey(CHAIN_ID, tokenAddress)
-        viewingKeyStore.update(keysList => keysList.set(tokenAddress, vk!))
-    }
+    //         keplrKey.set(key)
+    //         secretClient.set(client)
+    //         getBalances()
+    //         connected = true
+    //     }
+    // }
 
     async function getBalances() {
 
@@ -85,7 +85,7 @@
         scrtBalance.set(Number(response.balance?.amount! as any / 1e6).toString())
 
         try { 
-            const vk = await window.keplr?.getSecret20ViewingKey(CHAIN_ID, "secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852")
+            const vk = await window.keplr?.getSecret20ViewingKey(SECRET_CHAIN_ID, "secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852")
             const snip20Response = await secretjs.query.snip20.getBalance(
             {
                 contract: {
@@ -109,8 +109,8 @@
 
 <div class="wallet">
     
-    <button on:click={connectKeplr} class:connected="{connected == true}">
-        {connected == false ? 'Connect' : compactAddress(keplr.bech32Address)}
+    <button on:click={ () => connect() } class:connected="{connected == true}">
+        { connected == false ? 'Connect' : compactAddress(keplr.bech32Address)}
     </button>
     {#if keplr }
         <div class="balance">
