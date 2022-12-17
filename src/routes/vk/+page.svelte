@@ -82,16 +82,21 @@
   
   {#each tokens as token}
   <div class="card">
-    <!-- add a way to check if user already has viewing key for a given token -->
-    {#if false }
-    <p> <img src={token.logo} alt="logo"/>
-      {token.symbol} <button style="cursor:default;" disabled> key found </button>
-    </p>
+
+    {#await getKeplrViewingKey(token.address) then vk }
+
+    {#if vk == null}
+      <p> <img src='{base}{token.logo}' alt="logo"/>
+        {token.symbol} <button on:click={() => setKeplrViewingKey(token.address)}> set key </button>
+      </p>
     {:else}
-    <p> <img src='{base}{token.logo}' alt="logo"/>
-      {token.symbol} <button on:click={() => setKeplrViewingKey(token.address)}> set key </button>
-    </p>
+      <p> <img src='{base}{token.logo}' alt="logo"/>
+        {token.symbol} <button disabled style="cursor: default;"> key set </button>
+      </p>
     {/if}
+
+    {/await}
+    
   </div>  
   {/each}
   
@@ -106,6 +111,7 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    row-gap: 10px;
   }
   .card {
     display: flex;
