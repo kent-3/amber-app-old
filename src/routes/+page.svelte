@@ -2,6 +2,10 @@
 	import illustration from '$lib/images/illustration.svg'
 	import { blur, fade, scale, draw, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+	import { onMount } from 'svelte';
+
+	let ready = false;
+	onMount(() => ready = true);
 
 	let visible = true;
 
@@ -28,7 +32,7 @@
 		toggle me
 	</label> -->
 
-	{#if visible}
+	{#if ready}
 	<svg width="300" height="300" viewBox="0 0 59 59" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path in:draw="{{duration: 3000}}" d="M29.5 57C44.6878 57 57 44.6878 57 29.5C57 14.3122 44.6878 2 29.5 2C14.3122 2 2 14.3122 2 29.5C2 44.6878 14.3122 57 29.5 57Z" fill="none" stroke="#798498" stroke-width="2.0122" stroke-miterlimit="10"/>
 		<path d="M20.3672 18.8621L26.0882 15.8511L24.5827 22.1743L35.1214 28.3094L40.8425 33.6164L40.2403 40.2408L36.0248 42.3485L35.1214 36.3264L24.2816 30.3042L19.4639 24.5832L20.3672 18.8621Z" fill="none"/>
