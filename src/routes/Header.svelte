@@ -32,8 +32,8 @@
 			<li aria-current={$page.url.pathname.startsWith('/vk') ? 'page' : undefined}>
 				<a href="{base}/vk">Keys</a>
 			</li>
-			<li aria-current={$page.url.pathname.startsWith('/nft') ? 'page' : undefined}>
-				<a href="{base}/nft">NFTs</a>
+			<li aria-current={$page.url.pathname.startsWith('/anons') ? 'page' : undefined}>
+				<a href="{base}/anons">Anons</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">

@@ -153,6 +153,7 @@
 		font-weight: 700;
 		letter-spacing: 1px;
 		transition: all ease 1s;
+		z-index: 4;
 	}
 	button:hover {
 		filter: brightness(120%);
