@@ -7,7 +7,7 @@ export const isAccountAvailable: Writable<boolean> = writable(false)
 export const keplrKey: Writable<Key> = writable()
 export const secretClient: Writable<SecretNetworkClient> = writable()
 export const secretAddress: Writable<string> = writable()
-export const viewingKeyStore: Writable<Map<SecretAddress, string>> = writable()
+export const viewingKeys: Writable<Map<SecretAddress, string>> = writable(new Map<SecretAddress, string>)
 
 export const scrtBalance: Writable<string> = writable('... ')
 export const amberBalance: Writable<string> = writable('... ')

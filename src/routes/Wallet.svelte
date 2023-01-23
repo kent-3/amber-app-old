@@ -1,6 +1,5 @@
-<script lang="ts">
+<script lang="ts" type="module">
 	import { onMount } from 'svelte'
-	import type { SecretNetworkClient } from 'secretjs'
 	import { setupKeplr } from '$lib/keplr'
 	import { compactAddress } from '$lib/utils'
 	import { chains } from '$lib/config'
@@ -11,10 +10,8 @@
 		keplrKey,
 		secretClient,
 		secretAddress,
-		viewingKeyStore
+		viewingKeys
 	} from '$lib/stores'
-	import type { Key } from '@keplr-wallet/types'
-	import type { SecretAddress } from '$lib/tokens'
 
 	const SECRET_CHAIN_ID = chains['Secret Network'].chain_id
 
@@ -25,97 +22,50 @@
 		})
 	})
 
-	function connect() {
-		setupKeplr(isAccountAvailable, keplrKey, secretClient, secretAddress)
+	async function connect() {
+		await setupKeplr(isAccountAvailable, keplrKey, secretClient, secretAddress)
+		await getBalances()
 	}
-
-	let connected: boolean
-	isAccountAvailable.subscribe((value) => {
-		connected = value
-	})
-
-	let keplr: Key
-	keplrKey.subscribe((value) => {
-		keplr = value
-	})
-
-	let secretjs: SecretNetworkClient
-	secretClient.subscribe((value) => {
-		secretjs = value
-	})
-
-	let viewingKeys: Map<SecretAddress, string>
-	viewingKeyStore.subscribe((value) => {
-		viewingKeys = value
-	})
-
-	let scrtBalanceValue: string
-	scrtBalance.subscribe((value) => {
-		scrtBalanceValue = value
-	})
-
-	// async function connectKeplr() {
-	//     if (!window.keplr) {
-	//         alert("Please install keplr extension")
-	//     } else {
-	//         await window.keplr!.enable(CHAIN_ID)
-	//             .catch((error) => console.log(error))
-
-	//         const key = await window.keplr!.getKey(CHAIN_ID)
-
-	//         const keplrOfflineSigner = window.keplr!.getOfflineSignerOnlyAmino(CHAIN_ID)
-	//         const [{ address: walletAddress }] = await keplrOfflineSigner.getAccounts()
-	//         const client = new SecretNetworkClient({
-	//             url,
-	//             chainId: CHAIN_ID,
-	//             wallet: keplrOfflineSigner,
-	//             walletAddress: walletAddress,
-	//             encryptionUtils: window.keplr!.getEnigmaUtils(CHAIN_ID),
-	//         })
-
-	//         keplrKey.set(key)
-	//         secretClient.set(client)
-	//         getBalances()
-	//         connected = true
-	//     }
-	// }
-
+	
 	async function getBalances() {
-		const response = await secretjs.query.bank.balance({
-			address: secretjs.address,
+		const response = await $secretClient.query.bank.balance({
+			address: $secretClient.address,
 			denom: 'uscrt'
 		})
-		scrtBalance.set(Number((response.balance?.amount as any) / 1e6).toString())
+		$scrtBalance = Number((response.balance?.amount as any) / 1e6).toString()
 
 		try {
 			const vk = await window.keplr?.getSecret20ViewingKey(
 				SECRET_CHAIN_ID,
 				'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852'
 			)
-			const snip20Response = await secretjs.query.snip20.getBalance({
+			const snip20Response = await $secretClient.query.snip20.getBalance({
 				contract: {
 					address: 'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852',
 					code_hash: '5a085bd8ed89de92b35134ddd12505a602c7759ea25fb5c089ba03c8535b3042'
 				},
-				address: secretjs.address,
+				address: $secretClient.address,
 				auth: {
 					key: vk
 				}
 			})
-			amberBalance.set(Number((snip20Response.balance.amount as any) / 1e6).toString())
+			viewingKeys.update(map => map.set('secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852', vk!))
+			$amberBalance = Number((snip20Response.balance.amount as any) / 1e6).toString()
 		} catch {
-			amberBalance.set('... ')
+			$amberBalance = '... '
 		}
+		console.log($viewingKeys)
+		console.log($amberBalance)
 	}
 </script>
 
 <div class="wallet">
-	<button on:click={() => connect()} class:connected={connected == true}>
-		{connected == false ? 'Connect' : compactAddress(keplr.bech32Address)}
+	<button on:click={() => connect()} class:connected={$isAccountAvailable == true}>
+		{$isAccountAvailable == false ? 'Connect' : compactAddress($keplrKey.bech32Address)}
 	</button>
-	{#if keplr}
+	{#if $keplrKey}
 		<div class="balance">
-			[ {keplr.name} ]
+			[ {$keplrKey.name} ]
 		</div>
 	{/if}
 </div>
