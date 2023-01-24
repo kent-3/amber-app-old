@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte'
 	import { setupKeplr, getKeplrViewingKey } from '$lib/keplr'
 	import { chains } from '$lib/config'
-	import tokenList from '$lib/tokens.json'
+	import { type Token, tokenList } from '$lib/tokens'
 	import { compactAddress } from '$lib/utils'
 	import {
 		amberBalance,
@@ -13,17 +13,6 @@
 		secretAddress,
 		viewingKeys
 	} from '$lib/stores'
-
-	type SecretAddress = `secret1${string}`
-
-	interface Token {
-		name: string;
-		label: string;
-		address: SecretAddress;
-		symbol: string;
-		decimals: number;
-		codeHash: string;
-	}
 
 	const SECRET_CHAIN_ID = chains['Secret Network'].chain_id
 
@@ -36,8 +25,8 @@
 
 	async function connect() {
 		await setupKeplr(isAccountAvailable, keplrKey, secretClient, secretAddress)
-		await getBalances()
 		await getViewingKeys(tokenList as Token[])
+		await getBalances()
 	}
 	
 	async function getBalances() {
@@ -48,10 +37,13 @@
 		})
 		$scrtBalance = Number((response.balance?.amount as any) / 1e6).toString()
 
+		console.log($scrtBalance)
+
 		const vk = await window.keplr?.getSecret20ViewingKey(
 			SECRET_CHAIN_ID,
 			'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852'
 		)
+
 		const snip20Response = await $secretClient.query.snip20.getBalance({
 			contract: {
 				address: 'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852',
@@ -62,15 +54,12 @@
 				key: vk
 			}
 		})
-		viewingKeys.update(map => map.set('secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852', vk!))
 		$amberBalance = Number((snip20Response.balance.amount as any) / 1e6).toString()
-
-		console.log($viewingKeys)
 		console.log($amberBalance)
 	}
 
-	async function getViewingKeys(tokenList:Token[]) {
-		for (const token of tokenList as Token[]) {
+	async function getViewingKeys(tokens:Token[]) {
+		for (const token of tokens as Token[]) {
 			const key = await getKeplrViewingKey(token.address)
 			if (key != null) {
 				viewingKeys.update(map => map.set(token.address, key))
