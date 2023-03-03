@@ -2,7 +2,7 @@
 	import { base } from '$app/paths'
 	import { setKeplrViewingKey } from '$lib/keplr'
 	import type { SecretAddress, Token } from '$lib/tokens'
-	import { tokenList as localTokens } from '$lib/tokens'
+	import { tokenList } from '$lib/tokens'
 	import { tokenStore, viewingKeys } from '$lib/stores'
 	import { blur } from 'svelte/transition'
 
@@ -20,7 +20,7 @@
 		const tokens = new Map<SecretAddress, Token>()
 		const relatedTokens = new Map<SecretAddress, Set<SecretAddress>>()
 
-		for (const token of localTokens) {
+		for (const token of tokenList) {
 			if (token.address in tokens) {
 				console.error(`Duplicate tokens ${token} and ${tokens.get(token.address)}`)
 			}

@@ -11,7 +11,8 @@
 		keplrKey,
 		secretClient,
 		secretAddress,
-		viewingKeys
+		viewingKeys,
+		balances
 	} from '$lib/stores'
 
 	const SECRET_CHAIN_ID = chains['Secret Network'].chain_id
@@ -39,23 +40,25 @@
 
 		console.log($scrtBalance)
 
-		const vk = await window.keplr?.getSecret20ViewingKey(
-			SECRET_CHAIN_ID,
-			'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852'
-		)
-
-		const snip20Response = await $secretClient.query.snip20.getBalance({
-			contract: {
-				address: 'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852',
-				code_hash: '5a085bd8ed89de92b35134ddd12505a602c7759ea25fb5c089ba03c8535b3042'
-			},
-			address: $secretClient.address,
-			auth: {
-				key: vk
-			}
-		})
-		$amberBalance = Number((snip20Response.balance.amount as any) / 1e6).toString()
-		console.log($amberBalance)
+		// const vk = await window.keplr?.getSecret20ViewingKey(
+		// 	SECRET_CHAIN_ID,
+		// 	'secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852'
+		// )
+		for (const token of tokenList) {
+			const snip20Response = await $secretClient.query.snip20.getBalance({
+				contract: {
+					address: token.address,
+					code_hash: token.codeHash
+				},
+				address: $secretClient.address,
+				auth: {
+					key: $viewingKeys.get(token.address)
+				}
+			})
+			$balances.set(token.address, Number(snip20Response.balance.amount))
+		}
+		// $amberBalance = Number((snip20Response.balance.amount as any) / 1e6).toString()
+		console.log($balances)
 	}
 
 	async function getViewingKeys(tokens:Token[]) {

@@ -1,6 +1,6 @@
 <script>
-	import Header from './Header.svelte'
-	import Wallet from './Wallet.svelte'
+	import Header from '$lib/Header.svelte'
+	import Wallet from '$lib/Wallet.svelte'
 	import './styles.css'
 </script>
 
